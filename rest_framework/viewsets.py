@@ -189,6 +189,12 @@ class ViewSetMixin(object):
 
         return action_urls
 
+    def get_serializer_class(self, name=None):
+        """
+        Return the class related to the current action name.
+        """
+        return self.get_serializer_class(name or self.action)
+
 
 class ViewSet(ViewSetMixin, views.APIView):
     """

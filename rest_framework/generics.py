@@ -35,6 +35,7 @@ class GenericAPIView(views.APIView):
     # for all subsequent requests.
     queryset = None
     serializer_class = None
+    serializer_classes = {}
 
     # If you want to use object lookups other than pk, set 'lookup_field'.
     # For more complex lookup requirements override `get_object()`.
@@ -111,7 +112,7 @@ class GenericAPIView(views.APIView):
         kwargs['context'] = self.get_serializer_context()
         return serializer_class(*args, **kwargs)
 
-    def get_serializer_class(self):
+    def get_serializer_class(self, name=None):
         """
         Return the class to use for the serializer.
         Defaults to using `self.serializer_class`.
@@ -121,13 +122,15 @@ class GenericAPIView(views.APIView):
 
         (Eg. admins get full serialization, others get basic serialization)
         """
-        assert self.serializer_class is not None, (
+        serializer_class = self.serializer_classes.get(name, self.serializer_class)
+
+        assert serializer_class is not None, (
             "'%s' should either include a `serializer_class` attribute, "
             "or override the `get_serializer_class()` method."
             % self.__class__.__name__
         )
 
-        return self.serializer_class
+        return serializer_class
 
     def get_serializer_context(self):
         """
